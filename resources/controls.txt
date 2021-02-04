@@ -1,0 +1,7 @@
+ESC = pause window / exit
+Z = rotate left
+X = rotate right
+SPACE = hard drop
+LEFT ARROW = move left
+RIGHT ARROW = move right
+SHIFT = hold
