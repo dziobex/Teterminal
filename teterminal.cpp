@@ -8,6 +8,7 @@
 #include <fstream>
 #include <string>
 #include <algorithm>
+#include <math.h>
 
 HANDLE handle;
 const char SQUARE = (char)219;
@@ -321,24 +322,32 @@ private:
 		std::vector<Record> records;
 		int sc;
 		std::string dt;
+		int b = -1;
 		while (!reader.eof()) {
 			reader >> dt >> sc;
 			if (reader.eof())
 				break;
-			records.push_back(Record() = { dt, sc });
+			records.push_back(Record());
+			records[records.size() - 1].date = dt;
+			records[records.size() - 1].score = sc;
 		}
 		std::sort(records.begin(), records.end(), [](Record& r1, Record r2) {return r1.score < r2.score; });
 		if (records.size() < 5) {
 			auto t = std::time(0);
 #pragma warning(suppress : 4996)
 			std::tm* now = localtime(&t);
-			records.push_back(Record() = { std::to_string(now->tm_year + 1900) + '/' + std::to_string(now->tm_mon + 1) + '/' + std::to_string(now->tm_mday), points });
+			records.push_back(Record()); // = { std::to_string(now->tm_year + 1900) + '/' + std::to_string(now->tm_mon + 1) + '/' + std::to_string(now->tm_mday), points });
+
+			records[records.size() - 1].date = std::to_string(now->tm_year + 1900) + '/' + std::to_string(now->tm_mon + 1) + '/' + std::to_string(now->tm_mday);
+			records[records.size() - 1].score = points;
 		}
 		else if (records[0].score < points) {
 			auto t = std::time(0);
 #pragma warning(suppress : 4996)
 			std::tm* now = localtime(&t);
-			records[0] = Record() = { std::to_string(now->tm_year + 1900) + '/' + std::to_string(now->tm_mon + 1) + '/' + std::to_string(now->tm_mday), points };
+			records[0] = Record();
+			records[0].date = std::to_string(now->tm_year + 1900) + '/' + std::to_string(now->tm_mon + 1) + '/' + std::to_string(now->tm_mday);
+			records[0].score = points;
 		}
 		reader.close();
 		std::sort(records.begin(), records.end(), [](Record& r1, Record r2) {return r1.score < r2.score; });
@@ -447,10 +456,16 @@ public:
 		}
 	}
 	void Play() {
+		if (GetAsyncKeyState(VK_SPACE) & 0x01);
+
 		points = 0;
 		for (int i = 0; i < 25; ++i)
-			for (int j = 0; j < 20; ++j)
-				grid[i][j] = Cell() = { rand() % 4, false, false };
+			for (int j = 0; j < 20; ++j) {
+				grid[i][j] = Cell(); // = { rand() % 4, false, false };
+				grid[i][j].color = rand() % 4;
+				grid[i][j].exists = false;
+				grid[i][j].movable = false;
+			}
 
 		int x = 2, y = 0, counter = 0, nextShape = 0, nextColor = 0, heldShape = -1, heldColor = -1;
 
